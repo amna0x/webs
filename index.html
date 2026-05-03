@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>amna_OS // root@amna</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=VT323&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<!-- Hack mode overlay -->
+<div id="hack-overlay" aria-hidden="true">
+  <div class="scanlines"></div>
+  <div class="grain"></div>
+  <div class="vignette"></div>
+  <svg class="hack-eye" viewBox="0 0 200 120" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+    <defs>
+      <pattern id="hackdots" width="3" height="3" patternUnits="userSpaceOnUse">
+        <circle cx="1.5" cy="1.5" r="0.7" fill="currentColor"/>
+      </pattern>
+    </defs>
+    <ellipse cx="100" cy="60" rx="92" ry="42" fill="url(#hackdots)"/>
+    <circle cx="100" cy="60" r="22" fill="url(#hackdots)"/>
+    <circle cx="100" cy="60" r="8" fill="currentColor"/>
+  </svg>
+  <div class="hack-corner tl">// amna_net // SURVEILLANCE LIVE //</div>
+  <div class="hack-corner tr">REC ●</div>
+  <div class="hack-corner bl">FREQ 88.4 // SIG -42dBm</div>
+  <div class="hack-corner br">amna_OS v1.0.4-vapor // CLASSIFIED</div>
+</div>
+
+<!-- Boot screen -->
+<div id="boot-screen">
+  <div class="boot-window">
+    <div class="boot-title">AMNA_OS_BOOT_SEQ.EXE</div>
+    <pre id="boot-log"></pre>
+    <button id="boot-enter" class="boot-btn" type="button">PRESS ENTER TO ACCESS SYSTEM</button>
+  </div>
+</div>
+
+<!-- Top app bar -->
+<nav id="topbar">
+  <div class="topbar-left">
+    <span class="brand">amna_OS</span>
+    <a class="topbar-link active" data-focus="desktop" href="#">Desktop</a>
+    <a class="topbar-link" data-focus="terminal" href="#">Terminal</a>
+    <a class="topbar-link" data-focus="bio" href="#">Bio</a>
+    <a class="topbar-link" data-focus="vault" href="#">Vault</a>
+    <a class="topbar-link" data-focus="siem" href="#">SIEM</a>
+  </div>
+  <div class="topbar-right">
+    <span id="clock" class="clock">--:--:--</span>
+    <button id="theme-toggle" class="icon-btn" aria-label="Toggle theme" title="Toggle theme">
+      <span class="material-symbols-outlined">dark_mode</span>
+    </button>
+    <button id="hack-toggle" class="icon-btn" aria-label="Toggle hack mode" title="Hack mode">
+      <span class="material-symbols-outlined">visibility</span>
+    </button>
+  </div>
+</nav>
+
+<!-- Side rail -->
+<aside id="sidebar">
+  <button class="rail-btn" data-rail="terminal" title="Terminal">
+    <span class="material-symbols-outlined">terminal</span>
+    <span class="rail-label">ROOT</span>
+  </button>
+  <button class="rail-btn" data-rail="bio" title="Bio">
+    <span class="material-symbols-outlined">account_circle</span>
+    <span class="rail-label">USER</span>
+  </button>
+  <button class="rail-btn" data-rail="vault" title="Vault">
+    <span class="material-symbols-outlined">folder_special</span>
+    <span class="rail-label">VAULT</span>
+  </button>
+  <button class="rail-btn" data-rail="siem" title="SIEM">
+    <span class="material-symbols-outlined">radar</span>
+    <span class="rail-label">SIEM</span>
+  </button>
+  <button class="rail-btn" data-rail="status" title="System status">
+    <span class="material-symbols-outlined">memory</span>
+    <span class="rail-label">SYS</span>
+  </button>
+  <div class="rail-spacer"></div>
+  <button class="rail-btn small" data-rail="logs" title="Logs">
+    <span class="material-symbols-outlined">list_alt</span>
+    <span class="rail-label">LOGS</span>
+  </button>
+</aside>
+
+<!-- Desktop -->
+<main id="desktop">
+  <!-- ambient bg layers (vaporwave saturn scene — light + dark) -->
+  <div class="bg-stars" aria-hidden="true"></div>
+  <div class="bg-clouds" aria-hidden="true">
+    <div class="cloud c1"></div>
+    <div class="cloud c2"></div>
+    <div class="cloud c3"></div>
+    <div class="cloud c4"></div>
+    <div class="cloud c5"></div>
+  </div>
+  <svg class="bg-saturn" viewBox="0 0 200 200" aria-hidden="true">
+    <defs>
+      <radialGradient id="sat" cx="0.35" cy="0.35">
+        <stop offset="0%" stop-color="#fef3c7"/>
+        <stop offset="30%" stop-color="#fbcfe8"/>
+        <stop offset="60%" stop-color="#c4b5fd"/>
+        <stop offset="85%" stop-color="#67e8f9"/>
+        <stop offset="100%" stop-color="#a78bfa"/>
+      </radialGradient>
+      <radialGradient id="satDark" cx="0.35" cy="0.35">
+        <stop offset="0%" stop-color="#fde68a"/>
+        <stop offset="30%" stop-color="#f9a8d4"/>
+        <stop offset="60%" stop-color="#a78bfa"/>
+        <stop offset="100%" stop-color="#3b1d6e"/>
+      </radialGradient>
+      <linearGradient id="ring" x1="0" x2="1">
+        <stop offset="0%" stop-color="#a78bfa" stop-opacity="0.3"/>
+        <stop offset="40%" stop-color="#fef3c7"/>
+        <stop offset="60%" stop-color="#fbcfe8"/>
+        <stop offset="100%" stop-color="#67e8f9" stop-opacity="0.3"/>
+      </linearGradient>
+    </defs>
+    <ellipse cx="100" cy="108" rx="84" ry="16" fill="none" stroke="url(#ring)" stroke-width="7"/>
+    <ellipse cx="100" cy="108" rx="84" ry="16" fill="none" stroke="url(#ring)" stroke-width="3" opacity="0.55" transform="rotate(-2 100 108)"/>
+    <circle cx="100" cy="100" r="44" fill="url(#sat)" class="saturn-body-fill"/>
+    <ellipse cx="100" cy="108" rx="84" ry="16" fill="none" stroke="url(#ring)" stroke-width="2" opacity="0.85"/>
+    <circle cx="86" cy="92" r="6" fill="rgba(255,255,255,0.4)"/>
+  </svg>
+  <div class="bg-orbs" aria-hidden="true">
+    <div class="orb o1"></div>
+    <div class="orb o2"></div>
+    <div class="orb o3"></div>
+    <div class="orb o4"></div>
+  </div>
+  <div class="bg-classified" aria-hidden="true">CLASSIFIED</div>
+  <!-- hack mode: green halftone surveillance eye + grid + banners -->
+  <div class="bg-hack" aria-hidden="true">
+    <div class="hack-grid"></div>
+    <div class="hack-halftone"></div>
+    <svg class="hack-bigeye" viewBox="0 0 240 160" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <pattern id="hackDot" width="4" height="4" patternUnits="userSpaceOnUse">
+          <circle cx="2" cy="2" r="1.1" fill="#a3e635"/>
+        </pattern>
+      </defs>
+      <ellipse cx="120" cy="80" rx="115" ry="60" fill="url(#hackDot)"/>
+      <circle cx="120" cy="80" r="34" fill="url(#hackDot)"/>
+      <circle cx="120" cy="80" r="12" fill="#a3e635"/>
+      <circle cx="113" cy="73" r="4" fill="#0a0a0a"/>
+    </svg>
+    <div class="hack-banner-top">// ACT NOW AGAINST MASS SURVEILLANCE // FOLLOW @AMNA_NETWORK //</div>
+    <div class="hack-banner-bot">&gt; CONTROL YOUR DATA. PROTECT YOUR PRIVACY. TAKE BACK THE INTERNET.</div>
+  </div>
+
+  <!-- Desktop icons -->
+  <div id="icons-layer">
+    <button class="d-icon" data-app="terminal" style="left:32px;top:24px">
+      <div class="d-icon-frame"><span class="material-symbols-outlined">terminal</span></div>
+      <span class="d-icon-label">terminal.sh</span>
+    </button>
+    <button class="d-icon flutter-target" data-app="bio" style="left:32px;top:140px">
+      <div class="d-icon-frame avatar-frame">
+        <img src="assets/avatar.png" alt="Amna avatar" class="pixel-art"/>
+      </div>
+      <span class="d-icon-label">amna.exe</span>
+    </button>
+    <button class="d-icon" data-app="vault" style="left:32px;top:256px">
+      <div class="d-icon-frame"><span class="material-symbols-outlined">folder_special</span></div>
+      <span class="d-icon-label">vault</span>
+    </button>
+    <button class="d-icon" data-app="siem" style="left:32px;top:372px">
+      <div class="d-icon-frame siem-icon"><span class="material-symbols-outlined">radar</span></div>
+      <span class="d-icon-label">siem.dash</span>
+    </button>
+    <button class="d-icon" data-app="status" style="left:32px;top:488px">
+      <div class="d-icon-frame"><span class="material-symbols-outlined">monitoring</span></div>
+      <span class="d-icon-label">status.log</span>
+    </button>
+    <button class="d-icon" data-app="dossier" style="left:128px;top:24px">
+      <div class="d-icon-frame eye-icon"><span class="material-symbols-outlined">visibility</span></div>
+      <span class="d-icon-label">dossier.dat</span>
+    </button>
+    <button class="d-icon" data-app="saturn" style="left:128px;top:140px">
+      <div class="d-icon-frame saturn-icon">
+        <svg viewBox="0 0 32 32"><ellipse cx="16" cy="20" rx="13" ry="2.5" fill="none" stroke="#a78bfa" stroke-width="2"/><circle cx="16" cy="16" r="7" fill="#fde68a"/><ellipse cx="16" cy="20" rx="13" ry="2.5" fill="none" stroke="#fcd34d" stroke-width="1"/></svg>
+      </div>
+      <span class="d-icon-label">saturn</span>
+    </button>
+  </div>
+
+  <!-- Window: Terminal -->
+  <section class="win" id="win-terminal" data-app="terminal" style="left:160px;top:60px;width:720px;height:480px">
+    <header class="win-title">
+      <div class="title-left">
+        <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+        <span class="title-text">root@amna: ~</span>
+      </div>
+      <div class="win-ctrls">
+        <button class="win-btn" data-win-action="min" aria-label="Minimize">_</button>
+        <button class="win-btn" data-win-action="max" aria-label="Maximize">▢</button>
+        <button class="win-btn close" data-win-action="close" aria-label="Close">×</button>
+      </div>
+    </header>
+    <div class="win-body terminal-body" id="terminal">
+      <div id="term-output" class="term-output"></div>
+      <div class="term-line" id="term-input-line">
+        <span class="term-prompt"><span class="p-user">root</span><span class="p-at">@</span><span class="p-host">amna</span><span class="p-colon">:</span><span class="p-path">~</span><span class="p-dollar">$</span></span>
+        <input id="term-input" type="text" autocomplete="off" spellcheck="false" autocapitalize="off" />
+      </div>
+    </div>
+  </section>
+
+  <!-- Window: Bio -->
+  <section class="win" id="win-bio" data-app="bio" style="left:240px;top:120px;width:580px;height:520px;display:none">
+    <header class="win-title">
+      <div class="title-left">
+        <span class="material-symbols-outlined">account_circle</span>
+        <span class="title-text">SYS_BIO_AMNA.EXE</span>
+      </div>
+      <div class="win-ctrls">
+        <button class="win-btn" data-win-action="min">_</button>
+        <button class="win-btn" data-win-action="max">▢</button>
+        <button class="win-btn close" data-win-action="close">×</button>
+      </div>
+    </header>
+    <div class="win-body bio-body">
+      <div class="bio-grid">
+        <div class="bio-left">
+          <div class="avatar-card">
+            <img src="assets/avatar.png" alt="Amna" class="pixel-art"/>
+          </div>
+          <h1 class="bio-name">Amna Mahmood</h1>
+          <p class="bio-sub">CS Student @ Gomal University</p>
+          <div class="spec-card">
+            <span class="kbd-label">CURRENT SPEC</span>
+            <span>Cybersecurity · Flutter</span>
+          </div>
+        </div>
+        <div class="bio-right">
+          <h2 class="section-title"><span class="material-symbols-outlined">memory</span> System Proficiency</h2>
+          <div class="skill"><div class="skill-row"><span>Cybersecurity</span><span>Lvl 8</span></div><div class="bar" data-fill="8" data-color="primary"></div></div>
+          <div class="skill"><div class="skill-row"><span>Linux / Shell</span><span>Lvl 7</span></div><div class="bar" data-fill="7" data-color="secondary"></div></div>
+          <div class="skill"><div class="skill-row"><span>Flutter</span><span>Lvl 6</span></div><div class="bar" data-fill="6" data-color="tertiary"></div></div>
+          <div class="skill"><div class="skill-row"><span>CSS</span><span>Lvl 7</span></div><div class="bar" data-fill="7" data-color="primary"></div></div>
+          <div class="skill"><div class="skill-row"><span>HTML</span><span>Lvl 8</span></div><div class="bar" data-fill="8" data-color="secondary"></div></div>
+          <div class="skill"><div class="skill-row"><span>JavaScript</span><span>Lvl 7</span></div><div class="bar" data-fill="7" data-color="tertiary"></div></div>
+          <div class="skill"><div class="skill-row"><span>Computer Vision</span><span>Lvl 6</span></div><div class="bar" data-fill="6" data-color="primary"></div></div>
+          <div class="skill"><div class="skill-row"><span>Machine Learning</span><span>Lvl 6</span></div><div class="bar" data-fill="6" data-color="secondary"></div></div>
+          <div class="bio-actions">
+            <button class="btn" data-action="open-vault"><span class="material-symbols-outlined">folder_open</span>View Vault</button>
+            <button class="btn primary" data-action="contact"><span class="material-symbols-outlined">mail</span>Contact.bat</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Window: Vault -->
+  <section class="win" id="win-vault" data-app="vault" style="left:300px;top:80px;width:720px;height:520px;display:none">
+    <header class="win-title">
+      <div class="title-left">
+        <span class="material-symbols-outlined">folder_special</span>
+        <span class="title-text">VAULT — /home/amna/projects</span>
+      </div>
+      <div class="win-ctrls">
+        <button class="win-btn" data-win-action="min">_</button>
+        <button class="win-btn" data-win-action="max">▢</button>
+        <button class="win-btn close" data-win-action="close">×</button>
+      </div>
+    </header>
+    <div class="win-body vault-body">
+      <div class="vault-toolbar">
+        <button class="btn small" data-vault-back disabled><span class="material-symbols-outlined">arrow_back</span>Back</button>
+        <span class="vault-path">/home/amna/projects</span>
+      </div>
+      <div id="vault-grid" class="vault-grid"></div>
+      <div id="vault-detail" class="vault-detail" hidden></div>
+    </div>
+  </section>
+
+  <!-- Window: SIEM Dashboard -->
+  <section class="win" id="win-siem" data-app="siem" style="left:200px;top:60px;width:880px;height:580px;display:none">
+    <header class="win-title">
+      <div class="title-left">
+        <span class="material-symbols-outlined">radar</span>
+        <span class="title-text">SIEM — SECURITY EVENT MONITOR</span>
+      </div>
+      <div class="win-ctrls">
+        <button class="win-btn" data-win-action="min">_</button>
+        <button class="win-btn" data-win-action="max">▢</button>
+        <button class="win-btn close" data-win-action="close">×</button>
+      </div>
+    </header>
+    <div class="win-body siem-body">
+      <div class="siem-grid">
+        <div class="siem-cell siem-stats">
+          <h3>// THREAT METRICS</h3>
+          <div class="metric"><div class="metric-row"><span>Critical</span><span id="m-crit">0</span></div><div class="metric-bar"><i id="bar-crit"></i></div></div>
+          <div class="metric"><div class="metric-row"><span>High</span><span id="m-high">0</span></div><div class="metric-bar"><i id="bar-high"></i></div></div>
+          <div class="metric"><div class="metric-row"><span>Medium</span><span id="m-med">0</span></div><div class="metric-bar"><i id="bar-med"></i></div></div>
+          <div class="metric"><div class="metric-row"><span>Low</span><span id="m-low">0</span></div><div class="metric-bar"><i id="bar-low"></i></div></div>
+        </div>
+        <div class="siem-cell siem-map">
+          <h3>// GEO-NODE MAP</h3>
+          <div id="siem-map" class="map-canvas"></div>
+        </div>
+        <div class="siem-cell siem-feed">
+          <h3>// LIVE EVENT FEED <button id="siem-pause" class="btn small">pause</button></h3>
+          <div id="siem-events" class="event-list"></div>
+        </div>
+        <div class="siem-cell siem-chart">
+          <h3>// REQ/SEC (last 60s)</h3>
+          <canvas id="siem-spark" width="400" height="80"></canvas>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Window: Status -->
+  <section class="win" id="win-status" data-app="status" style="left:340px;top:140px;width:520px;height:380px;display:none">
+    <header class="win-title">
+      <div class="title-left">
+        <span class="material-symbols-outlined">monitoring</span>
+        <span class="title-text">SYSTEM STATUS</span>
+      </div>
+      <div class="win-ctrls">
+        <button class="win-btn" data-win-action="min">_</button>
+        <button class="win-btn" data-win-action="max">▢</button>
+        <button class="win-btn close" data-win-action="close">×</button>
+      </div>
+    </header>
+    <div class="win-body status-body" id="status-body"></div>
+  </section>
+
+  <!-- Window: Dossier -->
+  <section class="win" id="win-dossier" data-app="dossier" style="left:360px;top:120px;width:600px;height:480px;display:none">
+    <header class="win-title">
+      <div class="title-left">
+        <span class="material-symbols-outlined">visibility</span>
+        <span class="title-text">DOSSIER — CLASSIFIED</span>
+      </div>
+      <div class="win-ctrls">
+        <button class="win-btn" data-win-action="min">_</button>
+        <button class="win-btn" data-win-action="max">▢</button>
+        <button class="win-btn close" data-win-action="close">×</button>
+      </div>
+    </header>
+    <div class="win-body dossier-body" id="dossier-body"></div>
+  </section>
+
+  <!-- Window: Saturn (about) -->
+  <section class="win" id="win-saturn" data-app="saturn" style="left:380px;top:160px;width:480px;height:360px;display:none">
+    <header class="win-title">
+      <div class="title-left">
+        <span class="material-symbols-outlined">public</span>
+        <span class="title-text">SATURN.NFO</span>
+      </div>
+      <div class="win-ctrls">
+        <button class="win-btn" data-win-action="min">_</button>
+        <button class="win-btn" data-win-action="max">▢</button>
+        <button class="win-btn close" data-win-action="close">×</button>
+      </div>
+    </header>
+    <div class="win-body saturn-body">
+      <p class="saturn-line">// SATURN.NFO  ::  amna_OS mascot file</p>
+      <p class="saturn-p">Saturn — sixth planet, ringed, mostly hydrogen, slowest of the classical wanderers. Picked as patron because it takes its time and still gets there.</p>
+      <p class="saturn-p"><span class="saturn-tag">why saturn</span> a portfolio is a long orbit. ship work. iterate. let the rings catch the light.</p>
+      <div class="saturn-stats">
+        <div><span class="muted">DIAMETER</span><span class="ok">120,536 km</span></div>
+        <div><span class="muted">MOONS</span><span class="ok">146 confirmed</span></div>
+        <div><span class="muted">YEAR</span><span class="ok">29.5 earth years</span></div>
+        <div><span class="muted">RINGS</span><span class="ok">7 main groups</span></div>
+      </div>
+      <p class="saturn-line">// HIDDEN COMMANDS</p>
+      <ul class="saturn-list">
+        <li><code>amna</code>  &mdash;  vanity daemon (purple hearts)</li>
+        <li><code>matrix</code>  &mdash;  falling code, ~10s</li>
+        <li><code>neko</code>  &mdash;  pixel cat companion</li>
+        <li><code>trace amna</code>  &mdash;  classified dossier window</li>
+        <li><code>decrypt secrets.enc</code>  &mdash;  animated decode</li>
+        <li><code>scan</code>  &mdash;  fake nmap-lite sweep</li>
+        <li><code>hack</code>  &mdash;  full surveillance mode</li>
+      </ul>
+      <p class="saturn-p"><span class="saturn-tag">tip</span> type <code>help</code> in the terminal for the full command list. <code>ESC</code> stops any running animation.</p>
+    </div>
+  </section>
+
+  <!-- FX layers -->
+  <canvas id="fx-canvas"></canvas>
+  <div id="hearts-layer" aria-hidden="true"></div>
+  <div id="neko-layer" aria-hidden="true"></div>
+
+  <!-- Cat assistant (replaces XP dog) -->
+  <div id="cat-buddy" aria-live="polite">
+    <div id="cat-bubble" class="bubble" hidden><span id="cat-msg"></span></div>
+    <div id="cat-sprite" class="cat-sprite" title="meow"></div>
+  </div>
+</main>
+
+<!-- Taskbar -->
+<footer id="taskbar">
+  <div class="task-left"><span>© AMNA_SYS</span></div>
+  <div id="task-windows" class="task-windows"></div>
+  <div class="task-right">
+    <span id="task-mode">MODE: DARK</span>
+    <span id="task-net">NET: SECURE</span>
+  </div>
+</footer>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="script.js" defer></script>
+</body>
+</html>
