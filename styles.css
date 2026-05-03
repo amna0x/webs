@@ -1130,7 +1130,7 @@ body._hxsc #desktop {
   z-index: 5;
 }
 #_p2 ._sec1 { min-height: 110vh; padding-top: 6vh; }
-#_p2 ._sec2 { min-height: 110vh; padding-bottom: 8vh; }
+#_p2 ._sec2 { min-height: 140vh; padding-top: 4vh; padding-bottom: 10vh; overflow: hidden; }
 
 /* Falling tiny ASCII cats inside p2 */
 #_p2 ._bg2 {
@@ -1141,21 +1141,20 @@ body._hxsc #desktop {
 }
 #_p2 ._fc {
   position: absolute;
-  top: -240px;
+  top: -40px;
   margin: 0;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 4px;
   line-height: 1;
-  letter-spacing: 0;
-  white-space: pre;
-  transform-origin: top left;
+  background: transparent;
+  text-shadow: 0 0 6px currentColor, 0 0 14px currentColor;
+  filter: drop-shadow(0 0 4px currentColor);
   animation: _fcfall linear infinite;
-  filter: drop-shadow(0 0 3px currentColor);
-  --scl: 0.25;
+  pointer-events: none;
+  user-select: none;
 }
 @keyframes _fcfall {
-  0%   { transform: translateY(0) scale(var(--scl)) rotate(-4deg); }
-  100% { transform: translateY(110vh) scale(var(--scl)) rotate(8deg); }
+  0%   { transform: translateY(0) rotate(-4deg); }
+  100% { transform: translateY(115vh) rotate(8deg); }
 }
 
 /* Floating hearts inside p2 */
@@ -1175,14 +1174,15 @@ body._hxsc #desktop {
 /* 3D cat — its own section, fully interactive, no frame */
 #_p2 ._cat3d {
   position: relative;
-  width: min(1600px, 100vw);
-  height: min(1200px, 96vh);
+  width: min(1900px, 100vw);
+  height: min(1400px, 100vh);
   z-index: 5;
   pointer-events: auto;
   background: transparent;
   box-shadow: none;
   border: 0;
   cursor: grab;
+  margin-top: 14vh;
 }
 #_p2 ._cat3d:active { cursor: grabbing; }
 #_p2 ._cat3d canvas { display: block; width: 100% !important; height: 100% !important; pointer-events: auto; touch-action: none; }
@@ -1193,15 +1193,13 @@ body._hxsc #desktop {
   pointer-events: none;
   z-index: 4;
 }
-#_p2 ._gi {
-  position: absolute;
-  width: clamp(80px, 11vw, 130px);
-  height: auto;
-  border-radius: 14px;
-  box-shadow:
-    0 8px 28px rgba(247, 202, 201, 0.7),
-    0 0 0 3px rgba(138, 154, 91, 0.45);
-  transition: transform 0.12s linear;
+#_p2 ._gi { 
+  position: absolute; 
+  display: block; 
+  width: 140px; 
+  height: auto; 
+  border-radius: 12px; 
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3); 
 }
 
 /* Alien text — fixed centered (not drifting), only phrases swap */
@@ -1269,7 +1267,12 @@ body._hxsc #desktop {
 }
 
 /* sec2 = relative anchor for bubble + cat */
-#_p2 ._sec2 { position: relative; }
+#_p2 ._sec2 { 
+  position: relative; 
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
 
 /* scroll hint on first page */
 #_p2 ._scrollHint {
@@ -1287,13 +1290,14 @@ body._hxsc #desktop {
   50%      { transform: translateY(8px); opacity: 1; }
 }
 
-/* Cat thought bubble — pretty, dynamic, sits upper-right of section */
+/* Cat thought bubble — top-center, anchored over cat head */
 #_p2 ._cat-bubble {
-  position: absolute;
-  top: clamp(18px, 5vh, 70px);
-  right: clamp(18px, 5vw, 90px);
-  max-width: min(440px, 36vw);
-  min-width: 220px;
+  position: relative;
+  margin-top: 10vh;
+  margin-bottom: -15vh; /* Allow overlapping the cat model below */
+  transform: scale(0.92);
+  max-width: min(540px, 78vw);
+  min-width: 240px;
   padding: 14px 22px 18px;
   background: linear-gradient(180deg, #FFF5F8, #FADADD);
   border: 3px solid #8A9A5B;
@@ -1306,7 +1310,6 @@ body._hxsc #desktop {
   z-index: 8;
   pointer-events: none;
   opacity: 0;
-  transform: scale(0.92);
   transition: opacity 0.45s ease, transform 0.45s cubic-bezier(.2,.9,.3,1.2);
 }
 #_p2 ._cat-bubble._on { opacity: 1; transform: scale(1); }
@@ -1318,14 +1321,17 @@ body._hxsc #desktop {
   border: 3px solid #8A9A5B;
   border-radius: 50%;
   box-shadow: 2px 2px 0 #C76B98;
+  left: 50%;
 }
 #_p2 ._cat-bubble::before {
   width: 22px; height: 22px;
-  bottom: -28px; left: 36px;
+  bottom: -28px;
+  margin-left: 8px;
 }
 #_p2 ._cat-bubble::after {
   width: 12px; height: 12px;
-  bottom: -56px; left: 18px;
+  bottom: -54px;
+  margin-left: -6px;
 }
 #_p2 ._cat-bubble ._tag {
   display: block;
@@ -1380,6 +1386,9 @@ body._hxsc #desktop {
   overflow: hidden;
   max-height: 32vh;
   filter: drop-shadow(0 0 4px rgba(199, 107, 152, 0.5));
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 #_p2 ._cat-bubble ._art._mini {
   font-size: 14px;
@@ -1388,14 +1397,19 @@ body._hxsc #desktop {
   color: #8A9A5B;
   text-shadow: 0 0 8px #B8C58C;
 }
+#_p2 ._cat-bubble ._art._side {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px dashed rgba(138, 154, 91, 0.35);
+  font-size: 11px;
+  letter-spacing: 1px;
+  opacity: 0.85;
+}
 
 @media (max-width: 720px) {
   #_p2 ._cat-bubble {
-    top: 3vh;
-    right: 50%;
-    transform: translateX(50%) scale(0.92);
-    max-width: 86vw;
+    top: 2vh;
+    max-width: 88vw;
     min-width: 0;
   }
-  #_p2 ._cat-bubble._on { transform: translateX(50%) scale(1); }
 }

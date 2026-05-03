@@ -1240,20 +1240,7 @@ function _q0() {
   };
   window.addEventListener('scroll', _S.onScroll, { passive: true });
 
-  // Falling tiny ASCII cats inside p2
-  const bg = p2.querySelector('._bg2');
-  for (let i = 0; i < 140; i++) {
-    const c = document.createElement('pre');
-    c.className = '_fc';
-    c.textContent = WHOAMI_ART;
-    c.style.left = (Math.random() * 100) + '%';
-    c.style.color = palette[rand(0, palette.length - 1)];
-    c.style.opacity = (0.25 + Math.random() * 0.55).toFixed(2);
-    c.style.animationDuration = (12 + Math.random() * 22) + 's';
-    c.style.animationDelay = (-Math.random() * 25) + 's';
-    c.style.setProperty('--scl', (0.12 + Math.random() * 0.3).toFixed(2));
-    bg.appendChild(c);
-  }
+  // Sparkles inside p2 removed as requested
 
   // Floating hearts inside p2
   const hp = p2.querySelector('._hp');
@@ -1375,56 +1362,71 @@ async function _initBubble(bubble, audio) {
   const content = bubble.querySelector('._content');
   if (!content) return;
 
-  // Parse lyrics.txt — alien lines with [m:ss] cues, grouped English in parens.
-  // Each cue line: { cue: seconds, alien: 'text', english: '<group translation>' }
   let cues = [];
   try {
     const r = await fetch('assets/lyrics.txt', { cache: 'no-cache' });
     if (r.ok) {
       const txt = await r.text();
       const toSec = (mm, ss) => parseInt(mm, 10) * 60 + parseInt(ss, 10);
-      let pendingEng = [];
-      let groupStart = -1;
-      let inEng = false;
-      const closeGroup = () => {
-        if (pendingEng.length && groupStart >= 0 && groupStart < cues.length) {
-          const eng = pendingEng.join('\n').replace(/\)+\s*$/, '').trim();
-          for (let i = groupStart; i < cues.length; i++) {
-            if (!cues[i].english) cues[i].english = eng;
-          }
+      
+      let blockLines = [];
+      let blockStart = -1;
+      let blockEnd = -1;
+      
+      const flushBlock = () => {
+        if (blockLines.length > 0 && blockStart >= 0) {
+          const dur = (blockEnd > blockStart) ? (blockEnd - blockStart) : blockLines.length * 2.5;
+          const step = dur / blockLines.length;
+          blockLines.forEach((lineObj, i) => {
+            cues.push({
+              cue: blockStart + i * step,
+              alien: lineObj.alien,
+              english: lineObj.english
+            });
+          });
         }
-        pendingEng = [];
-        groupStart = -1;
-        inEng = false;
+        blockLines = [];
       };
+
       for (const raw of txt.split(/\r?\n/)) {
         const trimmed = raw.trim();
-        if (!trimmed) { closeGroup(); continue; }
-        if (/^(chorus|verse(\s*\d+)?|bridge|outro|intro|hook|pre[-\s]?chorus|refrain)$/i.test(trimmed)) {
+        if (!trimmed) continue;
+        
+        const timeMatch = trimmed.match(/^\[(\d+):(\d{2})(?:\s*(?:-|–|to)\s*(\d+):(\d{2}))?\]/);
+        if (timeMatch) {
+          flushBlock();
+          blockStart = toSec(timeMatch[1], timeMatch[2]);
+          if (timeMatch[3] && timeMatch[4]) {
+            blockEnd = toSec(timeMatch[3], timeMatch[4]);
+          } else {
+            blockEnd = blockStart + 10;
+          }
           continue;
         }
-        const cueMatch = trimmed.match(/^(.+?)\s*\[(\d+):(\d{2})\]\s*$/);
-        if (cueMatch) {
-          const alienText = cueMatch[1].trim();
-          const cue = toSec(cueMatch[2], cueMatch[3]);
-          if (groupStart < 0) groupStart = cues.length;
-          cues.push({ cue, alien: alienText, english: '' });
-          inEng = false;
+        
+        if (/^(Part|chorus|verse|bridge|outro|intro|hook|pre[-\s]?chorus|refrain|🎷|keep repeating)/i.test(trimmed)) {
           continue;
         }
-        if (trimmed.startsWith('(') || inEng) {
-          let e = trimmed.replace(/^\(+/, '');
-          const endParen = /\)\s*$/.test(e);
-          if (endParen) e = e.replace(/\)+\s*$/, '');
-          if (e.trim()) pendingEng.push(e.trim());
-          inEng = !endParen;
-          continue;
+
+        const lineMatch = trimmed.match(/^(.+?)(?:\s*\((.+)\))?$/);
+        if (lineMatch) {
+          let alien = lineMatch[1].trim();
+          let english = lineMatch[2] ? lineMatch[2].replace(/\)+$/, '').trim() : '';
+          
+          if (alien.startsWith('(') && alien.endsWith(')')) {
+             english = alien.replace(/^\(+|\)+$/g, '').trim();
+             alien = '';
+          }
+          
+          if (blockStart >= 0) {
+            blockLines.push({ alien, english });
+          }
         }
       }
-      closeGroup();
+      flushBlock();
       cues.sort((a, b) => a.cue - b.cue);
     }
-  } catch (e) { /* fall through to art-only mode */ }
+  } catch (e) { console.error('Lyrics load err:', e); }
 
   // Compact alien-flavored ASCII art for "no lyric" gaps
   const MINI_ARTS = [
@@ -1489,29 +1491,46 @@ async function _initBubble(bubble, audio) {
     }
   }, 4200);
 
-  const intro = 17;
-  const tail = 1.5;
+  const HOLD = 4.8;
+  const JAZZ_GAP = 6;
   const onUpdate = () => {
     if (!_S.on) return;
     const dur = audio.duration;
-    if (!blocks.length || !isFinite(dur) || dur <= intro + 2) {
+    if (!cues.length || !isFinite(dur)) {
       if (mode !== 'mini' && mode !== 'big') setMini(artIdx);
       return;
     }
     const t = audio.currentTime;
-    if (t < intro - 0.2 || t > dur - 0.4) {
+    const firstCue = cues[0].cue;
+    if (t < firstCue - 0.15) {
       if (mode !== 'mini' && mode !== 'big') setMini(artIdx);
       return;
     }
-    const span = dur - intro - tail;
-    if (span <= 0) return;
-    const per = span / blocks.length;
-    const idx = Math.floor((t - intro) / per);
-    if (idx < 0 || idx >= blocks.length) {
+    let idx = -1;
+    for (let i = 0; i < cues.length; i++) {
+      if (cues[i].cue <= t + 0.1) idx = i;
+      else break;
+    }
+    if (idx < 0) {
       if (mode !== 'mini' && mode !== 'big') setMini(artIdx);
       return;
     }
-    setBlock(blocks[idx], idx);
+    const cur = cues[idx];
+    const next = cues[idx + 1];
+    const gapToNext = next ? next.cue - t : Infinity;
+    const sinceCur = t - cur.cue;
+
+    // Jazz/instrumental break: held current line long, next far away
+    if (sinceCur > HOLD && gapToNext > JAZZ_GAP) {
+      if (mode !== 'mini' && mode !== 'big') setMini(artIdx);
+      return;
+    }
+    // Past last cue + long tail outro
+    if (!next && sinceCur > 30) {
+      if (mode !== 'mini' && mode !== 'big') setMini(artIdx);
+      return;
+    }
+    setBlock(cur, idx);
   };
   audio.addEventListener('timeupdate', onUpdate);
   audio.addEventListener('loadedmetadata', onUpdate);
@@ -1587,6 +1606,9 @@ async function _load3DCat(container) {
       roughnessMap: tex.load(dir + 'body_roughness.jpg'),
       metalnessMap: tex.load(dir + 'body_metallic.jpg'),
       emissiveMap: sRGB(tex.load(dir + 'body_emissive.jpg')),
+      alphaMap: tex.load(dir + 'body_opacity.jpg'),
+      transparent: true,
+      alphaTest: 0.1,
       emissive: new THREE.Color(0xffffff),
       emissiveIntensity: 0.85,
       metalness: 1.0,
@@ -1614,9 +1636,9 @@ async function _load3DCat(container) {
         const box = new THREE.Box3().setFromObject(obj);
         const size = box.getSize(new THREE.Vector3());
         const maxDim = Math.max(size.x, size.y, size.z);
-        const target = 280;
+        const target = 380;
         const s = target / maxDim;
-        obj.scale.setScalar(s);
+        obj.scale.setScalar(s * 0.75); // Make the space cat smaller so it fits with lyrics
 
         const box2 = new THREE.Box3().setFromObject(obj);
         const c2 = box2.getCenter(new THREE.Vector3());
